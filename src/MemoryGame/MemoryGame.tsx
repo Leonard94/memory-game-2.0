@@ -1,5 +1,6 @@
 import { StyledMemoryGame } from "./styled";
 import { useEffect, useState } from "react";
+import Confetti from "react-confetti";
 
 const DATA = [
   { title: "400", text: "Bad Request" },
@@ -24,19 +25,28 @@ interface ISelectedCard {
 }
 
 export const MemoryGame = () => {
-  const [data, setData] = useState<IData[]>(
-    [...DATA, ...DATA]
+  const initializeGame = () => {
+    return [...DATA, ...DATA]
       .map((item) => ({ ...item, isActive: false, isCompleted: false }))
       .sort(() => Math.random() - 0.5)
-      .map((item, index) => ({ ...item, id: index }))
-  );
+      .map((item, index) => ({ ...item, id: index }));
+  };
+
+  const [moves, setMoves] = useState(0);
+  const [data, setData] = useState<IData[]>(initializeGame());
   const [messageText, setMessageText] = useState("");
   const [selectedCard, setSelectedCard] = useState<ISelectedCard>({
     first: null,
     second: null,
   });
+  const [showConfetti, setShowConfetti] = useState(false);
+  const isGameComplete = data.every((card) => card.isActive);
 
   const handleClick = (index: number) => {
+    if (isGameComplete) {
+      return;
+    }
+
     if (data[index].isCompleted) {
       setMessageText("Вы уже нашли пару этой карточке");
       return;
@@ -49,6 +59,10 @@ export const MemoryGame = () => {
     if (data[index].isActive) {
       setMessageText("Выберите вторую карточку");
       return;
+    }
+
+    if (selectedCard.first !== null) {
+      setMoves((prev) => prev + 1);
     }
 
     if (selectedCard.first === null) {
@@ -115,10 +129,33 @@ export const MemoryGame = () => {
     }
   }, [selectedCard, data]);
 
-  const isGameComplete = data.every((card) => card.isActive);
+  useEffect(() => {
+    if (isGameComplete) {
+      setShowConfetti(true);
+      const timer = setTimeout(() => {
+        setShowConfetti(false);
+      }, 5000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isGameComplete]);
+
+  const handleNewGame = () => {
+    setData(initializeGame());
+    setSelectedCard({ first: null, second: null });
+    setShowConfetti(false);
+    setMoves(0);
+    setMessageText("");
+  };
 
   return (
     <StyledMemoryGame>
+      <div className="game_info">
+        <div className="moves">Ходов: {moves}</div>
+        <button className="new-game-btn" onClick={handleNewGame}>
+          Новая игра
+        </button>
+      </div>
       <div className="field">
         <div className="cards">
           {data.map((item, index) => (
@@ -141,7 +178,22 @@ export const MemoryGame = () => {
       <div className="notice-body">
         {messageText.length > 0 && <div className="notice">{messageText}</div>}
       </div>
-      {isGameComplete && <div>Победа! Пора за работу</div>}
+      {isGameComplete && (
+        <div className="victory-message">
+          <p>Победа!</p> <p>Вы прошли игру за {moves} ходов</p>
+          <p>Пора за работу!</p>
+        </div>
+      )}
+      {showConfetti && (
+        <Confetti
+          width={window.innerWidth}
+          height={window.innerHeight}
+          recycle={false}
+          numberOfPieces={1000}
+          gravity={0.2}
+          colors={["#F1A53F", "#364758", "#bfe6f1", "#4CAF50"]}
+        />
+      )}
     </StyledMemoryGame>
   );
 };
