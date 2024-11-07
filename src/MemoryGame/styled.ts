@@ -58,13 +58,31 @@ export const StyledMemoryGame = styled.div`
   .cards {
     display: grid;
     grid-template-columns: repeat(4, 100px);
-    grid-template-rows: repeat(3, 100px);
+    grid-template-rows: repeat(4, 100px);
     grid-gap: 20px;
   }
 
   .card {
     position: relative;
     perspective: 1000px;
+  }
+
+  .frame {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Сохраняет пропорции и заполняет контейнер */
+    display: block;
   }
 
   .title {

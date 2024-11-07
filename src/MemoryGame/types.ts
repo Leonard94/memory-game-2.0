@@ -4,6 +4,7 @@ export interface IData {
   text: string;
   isActive: boolean;
   isCompleted: boolean;
+  imgUrl: string;
 }
 
 export interface ISelectedCard {

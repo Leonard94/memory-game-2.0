@@ -14,8 +14,11 @@ export const Card = ({ item, onClick }: CardProps) => (
   >
     <div className="card__front" />
     <div className="card__back">
-      <div className="title">{item.title}</div>
-      <div className="text">{item.text}</div>
+      <div className="frame">
+        <img src={item.imgUrl} alt={item.imgUrl} />
+      </div>
+      {/* <div className="title">{item.title}</div> */}
+      {/* <div className="text">{item.text}</div> */}
     </div>
   </div>
 );
